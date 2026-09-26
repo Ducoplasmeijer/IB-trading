@@ -23,6 +23,9 @@ Library: [`ib_async`](https://github.com/ib-api-reloaded/ib_async), the maintain
 - [x] **1. Connect:** IB Gateway connected (read-only). `ibt check` works.
 - [x] **1b. Read-only dashboard:** `ibt dashboard` shows the portfolio feed, gold prices and analysis, and trading-cost analysis (see README).
 - [ ] **1c. Flex history:** create the Flex query and token, and put them in `.env`, to get the full commission and fee history.
+- [x] **1d. Metals + sessions + order ticket:** Metals tab (gold/silver/copper/aluminium/nickel), Paper/Live switch, order ticket with preview → submit, order book, cancel, audit log.
+- [ ] **1e. Paper trading:** log in a paper Gateway on 4002 and place test orders from the Trade tab.
+- [ ] **1f. Market data:** decide which subscriptions are worth it (COMEX L1, Xetra/Euronext, depth).
 - [ ] **2. Gold call spread (paper):** pick GC futures options (COMEX, class OG, needs COMEX data) or GLD options (needs OPRA data). Run `ibt chain`, fill in `config/strategies/gold_call_spread.yaml`, run `ibt spread preview`, then place it on paper.
 - [ ] **3. Local API service:** a FastAPI app on 127.0.0.1 that owns the single IB connection and exposes `/portfolio`, `/positions`, `/orders/preview` and `/orders` (token-protected, same guardrails). Your existing dashboard calls this.
 - [ ] **4. Portfolio dashboard:** positions, P&L, margin, option Greeks, spread P&L chart. Read-only client ID.

@@ -39,11 +39,15 @@ class Settings(BaseSettings):
 
     kill_switch_file: Path = PROJECT_ROOT / "KILL_SWITCH"
 
-    # Dashboard (always connects read-only, never sends orders)
+    # Dashboard. It looks for a paper and a live Gateway session at the same time; the UI switches between them.
     dashboard_client_id: int = 11
     dashboard_port: int = 8050
+    paper_port: int = 4002
+    live_port: int = 4001
+    paper_orders: bool = True  # dashboard may send orders to the PAPER session (account must be DU.../DF...)
     market_data_type: int = 3  # 1=live, 3=delayed (returns live where you have a subscription)
     watchlist_file: Path = PROJECT_ROOT / "config" / "watchlist.yaml"
+    audit_log: Path = PROJECT_ROOT / "logs" / "orders.jsonl"
 
     # Optional Flex Web Service for full trade/cost history (Client Portal > Reports > Flex Queries)
     flex_token: SecretStr | None = None
@@ -67,6 +71,8 @@ class Settings(BaseSettings):
             raise ValueError(f"IB_MODE=paper but IB_PORT={self.port} is a LIVE port.")
         if self.mode is TradingMode.LIVE and self.port in PAPER_PORTS:
             raise ValueError(f"IB_MODE=live but IB_PORT={self.port} is a paper port.")
+        if self.paper_port in LIVE_PORTS or self.live_port in PAPER_PORTS:
+            raise ValueError("IB_PAPER_PORT / IB_LIVE_PORT are swapped (paper: 4002/7497, live: 4001/7496).")
         if self.max_contracts_per_order < 1 or self.max_debit_per_order <= 0:
             raise ValueError("Order limits must be positive.")
         return self

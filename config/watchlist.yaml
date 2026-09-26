@@ -1,79 +1,96 @@
-# Gold products shown on the dashboard. Safe to commit (no account data).
+# Metals shown on the dashboard, grouped per metal. Safe to commit (no account data).
 #
-# kind: spot | future | etf
-# contract: fields passed to ib_async Contract (CONTFUT is resolved to the current front month)
-# Cost assumptions are ESTIMATES for comparison only. Check them against your own IBKR commission tier:
-# https://www.interactivebrokers.com/en/pricing/commissions-home.php
-#   commission: per_unit (per contract/share), pct (of notional), min, max_pct   -- per side, in product currency
-#   typical_spread: bid/ask spread (price units) used when no live quote is available (e.g. market closed)
-#   expense_ratio: annual fund fee (ETF/ETC)
-#   rolls_per_year: futures only, how often you'd roll to keep exposure
+# group.reference: product used as the metal's price benchmark (spot where IB has it, else the front future)
+# group.unit:      unit of the reference price (oz, lb, t)
+# product.kind:    spot | future | etf   (etf = any exchange-traded fund/ETC)
+# product.contract: fields for an ib_async Contract. CONTFUT is resolved to the current front month.
+# Cost assumptions are ESTIMATES for comparison. Check them against your own IBKR tier:
+#   https://www.interactivebrokers.com/en/pricing/commissions-home.php
+#   commission: per_unit, pct (of notional), min, max_pct   -- per side, in the product's currency
+#   typical_spread: bid/ask spread used when there is no live quote (market closed / no subscription)
+#   expense_ratio: annual fund fee (verify on the issuer's site)
+#   rolls_per_year: futures only
+# Note: IBKR has no LME access, so nickel is only available via ETCs here.
 
 fx:
-  # Used to convert USD gold prices to EUR
   contract: {secType: CASH, symbol: EUR, currency: USD, exchange: IDEALPRO}
 
-reference: XAUUSD   # spot gold, used for tracking/carry analysis
+groups:
+  - name: Gold
+    unit: oz
+    reference: XAUUSD
+    products:
+      - {key: XAUUSD, name: Gold spot, kind: spot, what_to_show: MIDPOINT, typical_spread: 0.30,
+         contract: {secType: CMDTY, symbol: XAUUSD, exchange: SMART, currency: USD}}
+      - {key: GC, name: COMEX Gold future (100 oz), kind: future, multiplier: 100, typical_spread: 0.10,
+         rolls_per_year: 6, commission: {per_unit: 2.40},
+         contract: {secType: CONTFUT, symbol: GC, exchange: COMEX, currency: USD}}
+      - {key: MGC, name: COMEX Micro Gold future (10 oz), kind: future, multiplier: 10, typical_spread: 0.10,
+         rolls_per_year: 6, commission: {per_unit: 0.85},
+         contract: {secType: CONTFUT, symbol: MGC, exchange: COMEX, currency: USD}}
+      - {key: GLD, name: SPDR Gold Shares, kind: etf, typical_spread: 0.02, expense_ratio: 0.0040,
+         commission: {per_unit: 0.005, min: 1.0, max_pct: 0.01},
+         contract: {secType: STK, symbol: GLD, exchange: SMART, currency: USD}}
+      - {key: IAU, name: iShares Gold Trust, kind: etf, typical_spread: 0.01, expense_ratio: 0.0025,
+         commission: {per_unit: 0.005, min: 1.0, max_pct: 0.01},
+         contract: {secType: STK, symbol: IAU, exchange: SMART, currency: USD}}
+      - {key: GLDM, name: SPDR Gold MiniShares, kind: etf, typical_spread: 0.01, expense_ratio: 0.0010,
+         commission: {per_unit: 0.005, min: 1.0, max_pct: 0.01},
+         contract: {secType: STK, symbol: GLDM, exchange: SMART, currency: USD}}
+      - {key: 4GLD, name: Xetra-Gold (EUR), kind: etf, typical_spread: 0.05, expense_ratio: 0.0030,
+         commission: {pct: 0.0005, min: 3.0},
+         contract: {secType: STK, symbol: 4GLD, exchange: IBIS, currency: EUR}}
 
-products:
-  - key: XAUUSD
-    name: Gold spot (USD/oz)
-    kind: spot
-    contract: {secType: CMDTY, symbol: XAUUSD, exchange: SMART, currency: USD}
-    what_to_show: MIDPOINT
-    multiplier: 1
-    typical_spread: 0.30
+  - name: Silver
+    unit: oz
+    reference: XAGUSD
+    products:
+      - {key: XAGUSD, name: Silver spot, kind: spot, what_to_show: MIDPOINT, typical_spread: 0.03,
+         contract: {secType: CMDTY, symbol: XAGUSD, exchange: SMART, currency: USD}}
+      - {key: SI, name: COMEX Silver future (5000 oz), kind: future, multiplier: 5000, typical_spread: 0.005,
+         rolls_per_year: 5, commission: {per_unit: 2.40},
+         contract: {secType: CONTFUT, symbol: SI, exchange: COMEX, currency: USD}}
+      - {key: SLV, name: iShares Silver Trust, kind: etf, typical_spread: 0.01, expense_ratio: 0.0050,
+         commission: {per_unit: 0.005, min: 1.0, max_pct: 0.01},
+         contract: {secType: STK, symbol: SLV, exchange: SMART, currency: USD}}
+      - {key: SIVR, name: abrdn Physical Silver, kind: etf, typical_spread: 0.02, expense_ratio: 0.0030,
+         commission: {per_unit: 0.005, min: 1.0, max_pct: 0.01},
+         contract: {secType: STK, symbol: SIVR, exchange: SMART, currency: USD}}
+      - {key: PHAG, name: WisdomTree Physical Silver (EUR, Amsterdam), kind: etf, typical_spread: 0.05,
+         expense_ratio: 0.0049, commission: {pct: 0.0005, min: 3.0},
+         contract: {secType: STK, symbol: PHAG, exchange: AEB, currency: EUR}}
 
-  - key: GC
-    name: COMEX Gold future (100 oz)
-    kind: future
-    contract: {secType: CONTFUT, symbol: GC, exchange: COMEX, currency: USD}
-    multiplier: 100
-    commission: {per_unit: 2.40}
-    typical_spread: 0.10
-    rolls_per_year: 6
+  - name: Copper
+    unit: lb
+    reference: HG
+    products:
+      - {key: HG, name: COMEX Copper future (25,000 lb), kind: future, multiplier: 25000, typical_spread: 0.0005,
+         rolls_per_year: 5, commission: {per_unit: 2.40},
+         contract: {secType: CONTFUT, symbol: HG, exchange: COMEX, currency: USD}}
+      - {key: MHG, name: COMEX Micro Copper future (2,500 lb), kind: future, multiplier: 2500, typical_spread: 0.0005,
+         rolls_per_year: 5, commission: {per_unit: 0.85},
+         contract: {secType: CONTFUT, symbol: MHG, exchange: COMEX, currency: USD}}
+      - {key: CPER, name: United States Copper Index Fund, kind: etf, typical_spread: 0.03, expense_ratio: 0.0097,
+         commission: {per_unit: 0.005, min: 1.0, max_pct: 0.01},
+         contract: {secType: STK, symbol: CPER, exchange: SMART, currency: USD}}
+      - {key: COPA, name: WisdomTree Copper ETC (London, USD), kind: etf, typical_spread: 0.05, expense_ratio: 0.0049,
+         commission: {pct: 0.0005, min: 4.0},
+         contract: {secType: STK, symbol: COPA, exchange: LSE, currency: USD}}
 
-  - key: MGC
-    name: COMEX Micro Gold future (10 oz)
-    kind: future
-    contract: {secType: CONTFUT, symbol: MGC, exchange: COMEX, currency: USD}
-    multiplier: 10
-    commission: {per_unit: 0.85}
-    typical_spread: 0.10
-    rolls_per_year: 6
+  - name: Aluminium
+    unit: t
+    reference: ALI
+    products:
+      - {key: ALI, name: COMEX Aluminum future (25 t), kind: future, multiplier: 25, typical_spread: 5.0,
+         rolls_per_year: 12, commission: {per_unit: 2.40},
+         contract: {secType: CONTFUT, symbol: ALI, exchange: COMEX, currency: USD}}
+      - {key: ALUM, name: WisdomTree Aluminium ETC (London, USD), kind: etf, typical_spread: 0.01, expense_ratio: 0.0049,
+         commission: {pct: 0.0005, min: 4.0},
+         contract: {secType: STK, symbol: ALUM, exchange: LSE, currency: USD}}
 
-  - key: GLD
-    name: SPDR Gold Shares (US)
-    kind: etf
-    contract: {secType: STK, symbol: GLD, exchange: SMART, currency: USD}
-    multiplier: 1
-    commission: {per_unit: 0.005, min: 1.0, max_pct: 0.01}
-    typical_spread: 0.02
-    expense_ratio: 0.0040
-
-  - key: IAU
-    name: iShares Gold Trust (US)
-    kind: etf
-    contract: {secType: STK, symbol: IAU, exchange: SMART, currency: USD}
-    multiplier: 1
-    commission: {per_unit: 0.005, min: 1.0, max_pct: 0.01}
-    typical_spread: 0.01
-    expense_ratio: 0.0025
-
-  - key: GLDM
-    name: SPDR Gold MiniShares (US)
-    kind: etf
-    contract: {secType: STK, symbol: GLDM, exchange: SMART, currency: USD}
-    multiplier: 1
-    commission: {per_unit: 0.005, min: 1.0, max_pct: 0.01}
-    typical_spread: 0.01
-    expense_ratio: 0.0010
-
-  - key: 4GLD
-    name: Xetra-Gold (EUR, physically backed ETC)
-    kind: etf
-    contract: {secType: STK, symbol: 4GLD, exchange: IBIS, currency: EUR}
-    multiplier: 1
-    commission: {pct: 0.0005, min: 3.0}
-    typical_spread: 0.05
-    expense_ratio: 0.0030   # verify on the issuer's site
+  - name: Nickel
+    unit: ""
+    products:
+      - {key: NICK, name: WisdomTree Nickel ETC (London, USD), kind: etf, typical_spread: 0.03, expense_ratio: 0.0049,
+         commission: {pct: 0.0005, min: 4.0},
+         contract: {secType: STK, symbol: NICK, exchange: LSE, currency: USD}}
