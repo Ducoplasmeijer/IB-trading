@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IB Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">IB Dashboard</div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="portfolio" class="active">Portfolio</button>
+    <button role="tab" data-tab="gold">Gold markets</button>
+    <button role="tab" data-tab="costs">Trading costs</button>
+    <button role="tab" data-tab="log">Connection</button>
+  </nav>
+  <div class="status" id="status"><span class="dot"></span><span id="status-text">Connecting…</span></div>
+</header>
+
+<main>
+  <div id="banner" class="banner" hidden></div>
+
+  <!-- PORTFOLIO -->
+  <section id="tab-portfolio" class="tab active">
+    <div class="tiles" id="kpis"></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-head"><h2>Positions</h2><span class="muted" id="pos-updated"></span></div>
+        <div class="table-wrap"><table id="positions"></table></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Allocation</h2><span class="muted">% of net liquidation</span></div>
+        <div class="chart-box short"><canvas id="alloc-chart"></canvas></div>
+        <h3>Cash</h3>
+        <div class="table-wrap"><table id="cash"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GOLD -->
+  <section id="tab-gold" class="tab">
+    <div class="quote-grid" id="quotes"></div>
+    <div class="card">
+      <div class="card-head">
+        <h2 id="gold-chart-title">Gold products, indexed to 100</h2>
+        <div class="controls">
+          <select id="gold-view" aria-label="View">
+            <option value="__compare__">Compare all (indexed)</option>
+          </select>
+          <div class="seg" id="gold-range">
+            <button data-r="5D">5D</button><button data-r="1M">1M</button><button data-r="3M">3M</button>
+            <button data-r="6M">6M</button><button data-r="1Y" class="active">1Y</button>
+            <button data-r="2Y">2Y</button><button data-r="5Y">5Y</button>
+          </div>
+        </div>
+      </div>
+      <div class="chart-box"><canvas id="gold-chart"></canvas></div>
+      <p class="muted small" id="gold-chart-note"></p>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>ETF / ETC tracking vs spot gold</h2><span class="muted" id="tracking-range"></span></div>
+      <p class="muted small">Product return minus spot-gold return in the same currency. The gap is roughly fund fees plus tracking error, i.e. what holding the product actually cost you.</p>
+      <div class="table-wrap"><table id="tracking"></table></div>
+    </div>
+  </section>
+
+  <!-- COSTS -->
+  <section id="tab-costs" class="tab">
+    <div class="card">
+      <div class="card-head">
+        <h2>Cost to hold gold exposure</h2>
+        <label class="controls">Target exposure (<span class="ccy">EUR</span>)
+          <input id="target" type="number" min="100" step="1000" value="10000">
+        </label>
+      </div>
+      <p class="muted small">Estimates: commission (from <code>config/watchlist.yaml</code>) + bid/ask spread (live when the market is open, otherwise assumed) for buying and selling once, plus one year of holding costs (ETF fee, or futures roll costs). Futures carry (the premium over spot) is shown separately; it roughly equals the interest your cash earns elsewhere.</p>
+      <div class="table-wrap"><table id="estimates"></table></div>
+      <p class="muted small">* spread assumed from <code>config/watchlist.yaml</code> (no live quote right now).</p>
+      <h3>First-year cost, bps of exposure (buy + sell + one year holding)</h3>
+      <div class="chart-box short"><canvas id="est-chart"></canvas></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-head"><h2>Your recent executions</h2><span class="muted">from Gateway (recent days only)</span></div>
+        <div id="exec-summary"></div>
+        <div class="table-wrap"><table id="exec-symbols"></table></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Full cost history (Flex)</h2><button id="flex-refresh" class="btn">Refresh from IBKR</button></div>
+        <div id="flex-body" class="muted small"></div>
+        <div class="chart-box short"><canvas id="flex-chart"></canvas></div>
+        <div class="table-wrap"><table id="flex-symbols"></table></div>
+        <div class="table-wrap"><table id="flex-fees"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOG -->
+  <section id="tab-log" class="tab">
+    <div class="card">
+      <h2>Connection</h2>
+      <dl id="conn" class="kv"></dl>
+    </div>
+    <div class="card">
+      <h2>Recent IB messages</h2>
+      <div class="table-wrap"><table id="errors"></table></div>
+    </div>
+  </section>
+</main>
+<footer class="muted small">Read-only view. This dashboard cannot place, modify or cancel orders.</footer>
+</body>
+</html>

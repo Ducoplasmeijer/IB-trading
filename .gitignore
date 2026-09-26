@@ -1,0 +1,42 @@
+# --- Secrets: never commit ---
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+*.p12
+
+# Local strategy files (real strikes/sizes). Only *.example.yaml is committed.
+config/strategies/*.yaml
+!config/strategies/*.example.yaml
+
+# Kill switch marker
+KILL_SWITCH
+
+# Logs / data exports (may contain account numbers and positions)
+logs/
+data/
+*.log
+*.csv
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude Code local-only settings
+.claude/settings.local.json

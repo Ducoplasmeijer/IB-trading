@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.local)",
+      "Read(./.env.live)",
+      "Read(./.env.paper)",
+      "Read(./secrets/**)",
+      "Read(./data/**)",
+      "Edit(./.env)",
+      "Edit(./.env.local)",
+      "Edit(./.env.live)",
+      "Edit(./.env.paper)"
+    ],
+    "ask": [
+      "Bash(ibt spread place:*)",
+      "PowerShell(ibt spread place:*)",
+      "Bash(git push:*)",
+      "PowerShell(git push:*)"
+    ]
+  }
+}

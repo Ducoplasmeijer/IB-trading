@@ -1,0 +1,79 @@
+# Gold products shown on the dashboard. Safe to commit (no account data).
+#
+# kind: spot | future | etf
+# contract: fields passed to ib_async Contract (CONTFUT is resolved to the current front month)
+# Cost assumptions are ESTIMATES for comparison only. Check them against your own IBKR commission tier:
+# https://www.interactivebrokers.com/en/pricing/commissions-home.php
+#   commission: per_unit (per contract/share), pct (of notional), min, max_pct   -- per side, in product currency
+#   typical_spread: bid/ask spread (price units) used when no live quote is available (e.g. market closed)
+#   expense_ratio: annual fund fee (ETF/ETC)
+#   rolls_per_year: futures only, how often you'd roll to keep exposure
+
+fx:
+  # Used to convert USD gold prices to EUR
+  contract: {secType: CASH, symbol: EUR, currency: USD, exchange: IDEALPRO}
+
+reference: XAUUSD   # spot gold, used for tracking/carry analysis
+
+products:
+  - key: XAUUSD
+    name: Gold spot (USD/oz)
+    kind: spot
+    contract: {secType: CMDTY, symbol: XAUUSD, exchange: SMART, currency: USD}
+    what_to_show: MIDPOINT
+    multiplier: 1
+    typical_spread: 0.30
+
+  - key: GC
+    name: COMEX Gold future (100 oz)
+    kind: future
+    contract: {secType: CONTFUT, symbol: GC, exchange: COMEX, currency: USD}
+    multiplier: 100
+    commission: {per_unit: 2.40}
+    typical_spread: 0.10
+    rolls_per_year: 6
+
+  - key: MGC
+    name: COMEX Micro Gold future (10 oz)
+    kind: future
+    contract: {secType: CONTFUT, symbol: MGC, exchange: COMEX, currency: USD}
+    multiplier: 10
+    commission: {per_unit: 0.85}
+    typical_spread: 0.10
+    rolls_per_year: 6
+
+  - key: GLD
+    name: SPDR Gold Shares (US)
+    kind: etf
+    contract: {secType: STK, symbol: GLD, exchange: SMART, currency: USD}
+    multiplier: 1
+    commission: {per_unit: 0.005, min: 1.0, max_pct: 0.01}
+    typical_spread: 0.02
+    expense_ratio: 0.0040
+
+  - key: IAU
+    name: iShares Gold Trust (US)
+    kind: etf
+    contract: {secType: STK, symbol: IAU, exchange: SMART, currency: USD}
+    multiplier: 1
+    commission: {per_unit: 0.005, min: 1.0, max_pct: 0.01}
+    typical_spread: 0.01
+    expense_ratio: 0.0025
+
+  - key: GLDM
+    name: SPDR Gold MiniShares (US)
+    kind: etf
+    contract: {secType: STK, symbol: GLDM, exchange: SMART, currency: USD}
+    multiplier: 1
+    commission: {per_unit: 0.005, min: 1.0, max_pct: 0.01}
+    typical_spread: 0.01
+    expense_ratio: 0.0010
+
+  - key: 4GLD
+    name: Xetra-Gold (EUR, physically backed ETC)
+    kind: etf
+    contract: {secType: STK, symbol: 4GLD, exchange: IBIS, currency: EUR}
+    multiplier: 1
+    commission: {pct: 0.0005, min: 3.0}
+    typical_spread: 0.05
+    expense_ratio: 0.0030   # verify on the issuer's site

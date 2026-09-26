@@ -1,0 +1,23 @@
+# Example bull call spread on gold. Copy to gold_call_spread.yaml (gitignored) and fill in real values.
+# All numbers below are PLACEHOLDERS, not a recommendation. Look up real expiries/strikes with:
+#   ibt chain --symbol GC --sec-type FOP --exchange COMEX --trading-class OG
+#
+# Option A: options on COMEX gold futures (100 oz multiplier, needs CME/COMEX market data subscription)
+symbol: GC
+sec_type: FOP
+exchange: COMEX
+trading_class: OG
+currency: USD
+expiry: "20261124"   # YYYYMMDD of the option's last trade date
+right: C
+long_strike: 3000     # buy this call
+short_strike: 3100    # sell this call
+quantity: 1
+limit_price: 25.0     # max net debit per spread in price points (x100 = USD)
+tif: DAY
+
+# Option B: options on the GLD ETF (100-share multiplier, needs US options (OPRA) data)
+# symbol: GLD
+# sec_type: OPT
+# exchange: SMART
+# trading_class: GLD
